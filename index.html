@@ -1,937 +1,873 @@
  <!DOCTYPE html>
-<html lang="en">
+<html lang="te">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mana Palle — Village Community</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --soil:   #3b2314;
-      --clay:   #7c4a2d;
-      --wheat:  #e8c87a;
-      --leaf:   #3d6b3f;
-      --bark:   #5a3e28;
-      --cream:  #fdf6e3;
-      --sand:   #f0ddb0;
-      --mango:  #f4a12a;
-      --white:  #fff;
-      --radius: 14px;
-      --shadow: 0 8px 32px rgba(59,35,20,0.18);
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: var(--cream);
-      color: var(--soil);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232,200,122,0.25) 0%, transparent 70%);
-      pointer-events: none; z-index: 0;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>మన పల్లె - Village Community Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;600;700&family=Mukta:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --soil:#8B4513; --turmeric:#E8A020; --leaf:#2D6A2D; --leaf-light:#4CAF50;
+  --cream:#FFF8E7; --earth:#F5E6C8; --red-alert:#C62828; --red-light:#EF5350;
+  --text-dark:#1A0A00; --text-mid:#4A3520; --text-light:#7A6040; --white:#FFFFFF;
+  --shadow:0 4px 20px rgba(139,69,19,0.15); --shadow-strong:0 8px 40px rgba(139,69,19,0.25);
+  --radius:16px; --radius-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Mukta','Noto Sans Telugu',sans-serif;background:var(--cream);color:var(--text-dark);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 20% 20%,rgba(232,160,32,0.08) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(45,106,45,0.08) 0%,transparent 50%);pointer-events:none;z-index:0;}
 
-    /* PAGES */
-    .page { display: none; min-height: 100vh; position: relative; z-index: 1; }
-    .page.active { display: flex; flex-direction: column; }
+/* LOADING */
+#loadingOverlay{position:fixed;inset:0;background:rgba(255,248,231,0.97);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.spinner{width:52px;height:52px;border:4px solid var(--earth);border-top-color:var(--leaf);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:16px;font-weight:700;color:var(--leaf);}
 
-    /* AUTH */
-    #page-login, #page-register, #page-profile-setup {
-      align-items: center; justify-content: center; padding: 20px;
-      background: linear-gradient(160deg, #fdf6e3 0%, #f5e6c0 100%);
-    }
-    .auth-card {
-      background: var(--white);
-      border-radius: 24px;
-      box-shadow: var(--shadow), 0 0 0 1px rgba(124,74,45,0.08);
-      padding: 48px 40px;
-      width: 100%; max-width: 420px;
-      animation: slideUp 0.4s ease both;
-    }
-    #page-profile-setup .auth-card { max-width: 480px; }
-    @keyframes slideUp {
-      from { opacity:0; transform: translateY(24px); }
-      to   { opacity:1; transform: translateY(0); }
-    }
-    .village-logo { text-align: center; margin-bottom: 28px; }
-    .village-logo .icon-hut { font-size: 48px; display: block; margin-bottom: 8px; }
-    .village-logo h1 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--soil); }
-    .village-logo p  { font-size: 0.85rem; color: var(--clay); margin-top: 4px; }
+/* AUTH */
+#authScreen{position:fixed;inset:0;background:linear-gradient(160deg,#1B5E20 0%,#2D6A2D 45%,#E8A020 100%);display:none;align-items:center;justify-content:center;z-index:500;padding:20px;}
+.auth-card{background:var(--white);border-radius:28px;padding:40px 36px;width:100%;max-width:420px;box-shadow:0 30px 80px rgba(0,0,0,0.35);animation:popIn 0.4s ease;}
+@keyframes popIn{from{opacity:0;transform:scale(0.9) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.auth-logo{text-align:center;margin-bottom:28px;}
+.auth-logo .big-icon{font-size:60px;display:block;margin-bottom:10px;}
+.auth-logo h2{font-size:30px;font-weight:800;color:var(--leaf);}
+.auth-logo p{font-size:14px;color:var(--text-light);margin-top:4px;}
+.auth-tabs{display:flex;background:var(--cream);border-radius:12px;padding:4px;margin-bottom:24px;gap:4px;}
+.auth-tab{flex:1;padding:10px;border:none;background:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--text-light);transition:all 0.2s;}
+.auth-tab.active{background:var(--leaf);color:white;box-shadow:0 2px 8px rgba(45,106,45,0.4);}
+.auth-input{width:100%;border:2px solid var(--earth);border-radius:12px;padding:14px 16px;font-size:15px;font-family:inherit;background:var(--cream);color:var(--text-dark);outline:none;margin-bottom:12px;transition:border-color 0.2s;}
+.auth-input:focus{border-color:var(--leaf-light);}
+.btn-primary{width:100%;padding:15px;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;background:linear-gradient(135deg,var(--leaf),#1B5E20);color:white;transition:all 0.2s;}
+.btn-primary:hover{opacity:0.9;transform:translateY(-1px);}
+.btn-google{width:100%;padding:14px;border:2px solid var(--earth);border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--white);color:var(--text-dark);display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;}
+.btn-google:hover{background:var(--cream);border-color:var(--turmeric);}
+.divider{text-align:center;font-size:13px;color:var(--text-light);margin:14px 0;position:relative;}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:43%;height:1px;background:var(--earth);}
+.divider::before{left:0;}.divider::after{right:0;}
 
-    .form-group { margin-bottom: 16px; }
-    .form-group label {
-      display: block; font-size: 0.75rem; font-weight: 700;
-      letter-spacing: 0.6px; text-transform: uppercase;
-      color: var(--clay); margin-bottom: 6px;
-    }
-    .form-group input, .form-group textarea {
-      width: 100%; padding: 12px 16px;
-      border: 2px solid var(--sand); border-radius: 10px;
-      font-family: 'Nunito', sans-serif; font-size: 0.95rem;
-      color: var(--soil); background: var(--cream);
-      transition: border-color 0.2s, box-shadow 0.2s; outline: none;
-    }
-    .form-group input:focus, .form-group textarea:focus {
-      border-color: var(--clay); box-shadow: 0 0 0 3px rgba(124,74,45,0.12); background:#fff;
-    }
-    .form-group textarea { resize: vertical; min-height: 80px; }
+/* PROFILE SETUP */
+#profileSetup{position:fixed;inset:0;background:linear-gradient(160deg,#1B5E20,#2D6A2D);display:none;align-items:center;justify-content:center;z-index:500;padding:20px;overflow-y:auto;}
+.profile-card{background:var(--white);border-radius:28px;padding:36px;width:100%;max-width:480px;box-shadow:0 30px 80px rgba(0,0,0,0.35);animation:popIn 0.4s ease;}
+.profile-card h2{font-size:24px;font-weight:800;color:var(--leaf);margin-bottom:4px;}
+.profile-card .subtitle{font-size:14px;color:var(--text-light);margin-bottom:24px;}
+.field-label{font-size:12px;font-weight:700;color:var(--text-mid);margin-bottom:8px;display:block;text-transform:uppercase;letter-spacing:0.5px;}
+.profile-input{width:100%;border:2px solid var(--earth);border-radius:12px;padding:14px 16px;font-size:15px;font-family:inherit;background:var(--cream);color:var(--text-dark);outline:none;margin-bottom:18px;transition:border-color 0.2s;}
+.profile-input:focus{border-color:var(--leaf-light);}
+.role-select{width:100%;border:2px solid var(--earth);border-radius:12px;padding:14px 16px;font-size:15px;font-family:inherit;background:var(--cream);color:var(--text-dark);outline:none;margin-bottom:18px;cursor:pointer;}
+.avatar-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:24px;}
+.av{width:50px;height:50px;border-radius:50%;border:3px solid var(--earth);background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;transition:all 0.2s;}
+.av.selected{border-color:var(--leaf);background:rgba(45,106,45,0.1);transform:scale(1.12);box-shadow:0 4px 12px rgba(45,106,45,0.3);}
+.save-btn{width:100%;background:linear-gradient(135deg,var(--leaf),#1B5E20);color:white;border:none;padding:16px;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.save-btn:hover{opacity:0.9;transform:translateY(-1px);}
 
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 13px 24px; border-radius: 10px;
-      font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700;
-      cursor: pointer; border: none;
-      transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
-    }
-    .btn:active { transform: scale(0.97); }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--clay), var(--soil));
-      color: var(--wheat); box-shadow: 0 4px 14px rgba(59,35,20,0.3); width: 100%;
-    }
-    .btn-primary:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(59,35,20,0.4); transform: translateY(-1px); }
-    .btn-danger { background: #e74c3c; color: #fff; box-shadow: 0 4px 12px rgba(231,76,60,0.3); }
-    .btn-sm { padding: 8px 16px; font-size: 0.82rem; }
-    .btn-google {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      width: 100%; padding: 12px 20px;
-      background: #fff; border: 2px solid #dadce0; border-radius: 10px;
-      font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700; color: #3c4043;
-      cursor: pointer; transition: background 0.2s, box-shadow 0.2s;
-    }
-    .btn-google:hover:not(:disabled) { background: #f8f9fa; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+/* TOP NAV */
+.top-nav{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,var(--leaf),#1B5E20);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:64px;box-shadow:0 3px 15px rgba(0,0,0,0.3);}
+.nav-logo{display:flex;align-items:center;gap:10px;color:white;}
+.logo-circle{width:40px;height:40px;background:var(--turmeric);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
+.nav-logo h1{font-size:22px;font-weight:800;}
+.nav-logo small{font-size:11px;opacity:0.8;display:block;margin-top:-3px;}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.elder-toggle{background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.4);color:white;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.3s;font-family:inherit;}
+.elder-toggle.active{background:var(--turmeric);border-color:var(--turmeric);color:var(--text-dark);}
+.nav-profile{display:flex;align-items:center;gap:8px;}
+.nav-avatar{width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,0.6);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.nav-uname{color:white;font-size:13px;font-weight:600;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.signout-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:6px 12px;border-radius:16px;cursor:pointer;font-size:12px;font-family:inherit;transition:all 0.2s;}
+.signout-btn:hover{background:rgba(255,255,255,0.28);}
 
-    .google-divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 14px 0; color: #aaa; font-size: 0.8rem;
-    }
-    .google-divider::before, .google-divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--sand);
-    }
+/* EMERGENCY BANNER */
+.emergency-banner{background:linear-gradient(90deg,var(--red-alert),#B71C1C,var(--red-alert));background-size:200%;animation:epulse 2s linear infinite;color:white;text-align:center;padding:10px 20px;font-weight:700;font-size:15px;display:none;gap:12px;align-items:center;justify-content:center;z-index:99;position:relative;}
+.emergency-banner.active{display:flex;}
+@keyframes epulse{0%{background-position:0%}100%{background-position:200%}}
+.dismiss-alert{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.5);color:white;padding:3px 10px;border-radius:12px;cursor:pointer;font-size:12px;}
 
-    .auth-switch { text-align: center; margin-top: 18px; font-size: 0.88rem; color: var(--clay); }
-    .auth-switch a { color: var(--leaf); font-weight: 700; cursor: pointer; text-decoration: none; }
-    .auth-switch a:hover { text-decoration: underline; }
+/* LAYOUT */
+.main-layout{max-width:1100px;margin:0 auto;padding:20px 16px;display:grid;grid-template-columns:280px 1fr 260px;gap:20px;position:relative;z-index:1;}
+.sidebar-left{position:sticky;top:84px;height:fit-content;}
+.sidebar-right{position:sticky;top:84px;height:fit-content;}
 
-    .alert { padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 14px; display: none; }
-    .alert.error   { background: #fde8e8; color: #c0392b; border: 1px solid #f5c6c6; display: block; }
-    .alert.success { background: #e8f5e9; color: #2d6a30; border: 1px solid #c6dfc7; display: block; }
+/* SARPANCH */
+.sarpanch-card{background:linear-gradient(145deg,#1B5E20,var(--leaf));border-radius:var(--radius);padding:24px 20px;color:white;box-shadow:var(--shadow-strong);margin-bottom:16px;position:relative;overflow:hidden;}
+.sarpanch-card::before{content:'🏛️';position:absolute;right:-10px;top:-10px;font-size:80px;opacity:0.1;}
+.saravatar{width:72px;height:72px;border-radius:50%;background:var(--turmeric);border:3px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 12px;box-shadow:0 4px 15px rgba(0,0,0,0.3);}
+.sar-name{text-align:center;font-size:17px;font-weight:700;}
+.sar-title{text-align:center;font-size:12px;background:rgba(255,255,255,0.2);border-radius:12px;padding:3px 12px;margin:6px auto 16px;width:fit-content;}
+.sar-btn{width:100%;background:var(--turmeric);color:var(--text-dark);border:none;padding:12px;border-radius:var(--radius-sm);font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;font-family:inherit;}
+.sar-btn:hover{background:#F5A623;transform:translateY(-1px);}
 
-    .spinner {
-      width: 18px; height: 18px;
-      border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff;
-      border-radius: 50%; animation: spin 0.6s linear infinite; display: none;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+/* EMERGENCY CARD */
+.emergency-card{background:linear-gradient(145deg,#B71C1C,var(--red-alert));border-radius:var(--radius);padding:20px;color:white;box-shadow:0 6px 25px rgba(198,40,40,0.35);margin-bottom:16px;}
+.emergency-card h3{font-size:14px;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;opacity:0.9;}
+.emg-btns{display:flex;flex-direction:column;gap:8px;}
+.emg-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;padding:11px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:14px;font-weight:600;text-align:left;display:flex;align-items:center;gap:10px;transition:all 0.2s;font-family:inherit;}
+.emg-btn:hover{background:rgba(255,255,255,0.25);transform:translateX(3px);}
 
-    /* PROFILE SETUP */
-    .uid-badge {
-      background: linear-gradient(135deg, var(--leaf), #2d4d2f);
-      color: var(--wheat); padding: 10px 16px; border-radius: 10px;
-      font-family: 'Playfair Display', serif; font-size: 1.1rem;
-      font-weight: 700; letter-spacing: 2px; text-align: center; margin-bottom: 18px;
-    }
-    .uid-badge span { font-size: 0.7rem; display: block; letter-spacing: 1px; opacity: 0.8; font-family: 'Nunito'; }
-    .avatar-pick { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
-    .avatar-option {
-      width: 52px; height: 52px; border-radius: 50%; font-size: 26px;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--sand); cursor: pointer; border: 3px solid transparent;
-      transition: border-color 0.2s, transform 0.15s;
-    }
-    .avatar-option:hover { transform: scale(1.1); }
-    .avatar-option.selected { border-color: var(--clay); background: #ffe8c8; }
+/* POST CREATOR */
+.post-creator{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px;border:2px solid var(--earth);}
+.creator-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.creator-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--turmeric),var(--soil));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.creator-input{flex:1;border:2px solid var(--earth);border-radius:22px;padding:11px 18px;font-size:15px;font-family:inherit;background:var(--cream);color:var(--text-dark);outline:none;transition:border-color 0.2s;}
+.creator-input:focus{border-color:var(--leaf-light);}
+.creator-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.action-btn{flex:1;min-width:88px;padding:10px 12px;border-radius:var(--radius-sm);border:2px solid var(--earth);background:var(--cream);color:var(--text-mid);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;font-family:inherit;}
+.action-btn:hover{background:var(--earth);border-color:var(--turmeric);color:var(--text-dark);}
+.action-btn.recording{background:#FFEBEE;border-color:var(--red-light);color:var(--red-alert);animation:rpulse 1s infinite;}
+@keyframes rpulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+.media-prev{margin:12px 0;display:none;}
+.media-prev.show{display:block;}
+.media-prev img{max-width:100%;border-radius:var(--radius-sm);max-height:200px;object-fit:cover;}
+.audio-prev-box{background:var(--cream);border:2px solid var(--earth);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-mid);}
+.post-btn{width:100%;margin-top:14px;background:linear-gradient(135deg,var(--leaf),#1B5E20);color:white;border:none;padding:13px;border-radius:var(--radius-sm);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.post-btn:hover{opacity:0.9;transform:translateY(-1px);}
+.post-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
 
-    /* NAVBAR */
-    #page-app { flex-direction: column; }
-    .navbar {
-      background: linear-gradient(135deg, var(--soil) 0%, var(--bark) 100%);
-      padding: 0 24px; height: 64px;
-      display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 4px 20px rgba(59,35,20,0.4);
-      position: sticky; top: 0; z-index: 100;
-    }
-    .navbar-brand {
-      display: flex; align-items: center; gap: 10px;
-      font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--wheat);
-    }
-    .navbar-right { display: flex; align-items: center; gap: 12px; }
-    .nav-avatar {
-      width: 38px; height: 38px; border-radius: 50%; background: var(--wheat);
-      font-size: 20px; display: flex; align-items: center; justify-content: center;
-      border: 2px solid rgba(255,255,255,0.3);
-    }
-    .nav-name {
-      color: var(--wheat); font-size: 0.88rem; font-weight: 600;
-      max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
+/* POSTS */
+.post-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:14px;border:2px solid var(--earth);animation:slideIn 0.35s ease;position:relative;overflow:hidden;}
+@keyframes slideIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.post-card.announcement{border-color:var(--leaf);border-left:5px solid var(--leaf);background:linear-gradient(to right,rgba(45,106,45,0.04),var(--white));}
+.post-card.announcement::after{content:'📢 అధికారిక ప్రకటన';position:absolute;top:12px;right:16px;background:var(--leaf);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;}
+.post-card.alert-post{border-color:var(--red-alert);border-left:5px solid var(--red-alert);}
+.post-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.post-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.post-meta{flex:1;}
+.post-author{font-weight:700;font-size:15px;color:var(--text-dark);}
+.post-time{font-size:12px;color:var(--text-light);margin-top:1px;}
+.post-body{font-size:15px;line-height:1.65;color:var(--text-mid);margin-bottom:12px;}
+.post-img{width:100%;border-radius:var(--radius-sm);max-height:300px;object-fit:cover;margin-bottom:12px;}
+.post-audio-wrap{background:linear-gradient(135deg,var(--cream),var(--earth));border:2px solid var(--earth);border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:12px;cursor:pointer;transition:all 0.2s;}
+.post-audio-wrap:hover{border-color:var(--leaf-light);}
+.play-btn{width:38px;height:38px;border-radius:50%;background:var(--leaf);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;flex-shrink:0;}
+.waves{display:flex;gap:3px;align-items:center;}
+.wb{width:3px;background:var(--leaf-light);border-radius:2px;animation:wave 1s ease-in-out infinite;}
+.wb:nth-child(1){height:10px;animation-delay:0s;}.wb:nth-child(2){height:18px;animation-delay:.1s;}.wb:nth-child(3){height:24px;animation-delay:.2s;}.wb:nth-child(4){height:14px;animation-delay:.3s;}.wb:nth-child(5){height:20px;animation-delay:.4s;}
+@keyframes wave{0%,100%{transform:scaleY(1);}50%{transform:scaleY(0.5);}}
+.audio-lbl{font-size:13px;color:var(--text-mid);}
+.post-footer{display:flex;gap:4px;border-top:1px solid var(--earth);padding-top:10px;}
+.react-btn{padding:7px 14px;border:none;background:none;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-family:inherit;color:var(--text-light);display:flex;align-items:center;gap:5px;transition:all 0.2s;}
+.react-btn:hover{background:var(--cream);color:var(--text-dark);}
+.react-btn.liked{color:var(--red-alert);}
+.del-btn{background:none;border:none;cursor:pointer;font-size:15px;opacity:0.4;padding:4px 6px;border-radius:6px;transition:opacity 0.2s;margin-left:auto;}
+.del-btn:hover{opacity:1;background:var(--cream);}
+.empty-feed{text-align:center;padding:48px 20px;color:var(--text-light);}
+.empty-feed .ef-icon{font-size:52px;margin-bottom:14px;}
 
-    /* LAYOUT */
-    .app-layout {
-      display: grid; grid-template-columns: 260px 1fr;
-      min-height: calc(100vh - 64px);
-    }
-    .sidebar {
-      background: linear-gradient(180deg, #fdf0da 0%, #f5e4c0 100%);
-      border-right: 2px solid var(--sand); padding: 20px 14px;
-      position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;
-    }
-    .profile-card-mini {
-      background: var(--white); border-radius: 14px; padding: 16px;
-      margin-bottom: 20px; box-shadow: 0 2px 12px rgba(59,35,20,0.1); text-align: center;
-    }
-    .profile-card-mini .av { font-size: 44px; margin-bottom: 6px; }
-    .profile-card-mini .nm { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--soil); }
-    .profile-card-mini .vtag { font-size: 0.78rem; color: var(--clay); margin-top: 2px; }
-    .profile-card-mini .uid-small { font-size: 0.7rem; color: #aaa; margin-top: 6px; font-family: monospace; }
-    .sidebar-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--clay); padding: 0 8px; margin-bottom: 8px; }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px; padding: 11px 14px;
-      border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.9rem;
-      color: var(--bark); transition: background 0.15s, color 0.15s; margin-bottom: 4px;
-    }
-    .nav-item:hover { background: rgba(124,74,45,0.1); color: var(--soil); }
-    .nav-item.active { background: linear-gradient(135deg, var(--clay), var(--soil)); color: var(--wheat); }
-    .nav-item .ni { font-size: 18px; }
+/* WIDGETS */
+.widget-card{background:var(--white);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:2px solid var(--earth);margin-bottom:16px;}
+.widget-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.vstat{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--earth);}
+.vstat:last-child{border-bottom:none;}
+.vstat-label{font-size:14px;color:var(--text-mid);}
+.vstat-val{font-size:16px;font-weight:700;color:var(--leaf);}
+.member-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--earth);}
+.member-row:last-child{border-bottom:none;}
+.mem-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.mem-name{font-size:13px;font-weight:600;flex:1;}
+.dot-online{width:8px;height:8px;border-radius:50%;background:var(--leaf-light);box-shadow:0 0 0 2px rgba(76,175,80,0.25);}
 
-    /* MAIN */
-    .main-content { padding: 24px; max-width: 700px; width: 100%; }
+/* FEED TABS */
+.feed-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.tab-btn{padding:8px 16px;border-radius:20px;border:2px solid var(--earth);background:var(--white);cursor:pointer;font-size:13px;font-weight:600;color:var(--text-light);transition:all 0.2s;font-family:inherit;}
+.tab-btn.active{background:var(--leaf);border-color:var(--leaf);color:white;}
 
-    /* COMPOSER */
-    .composer {
-      background: var(--white); border-radius: var(--radius);
-      box-shadow: var(--shadow); padding: 20px; margin-bottom: 24px;
-      border: 1px solid var(--sand);
-    }
-    .composer-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-    .ctab {
-      flex: 1; padding: 9px; border-radius: 8px; border: 2px solid var(--sand);
-      background: transparent; cursor: pointer; font-family: 'Nunito', sans-serif;
-      font-weight: 700; font-size: 0.82rem; color: var(--clay);
-      display: flex; align-items: center; justify-content: center; gap: 5px;
-      transition: all 0.2s;
-    }
-    .ctab.active { background: linear-gradient(135deg, var(--clay), var(--soil)); border-color: transparent; color: var(--wheat); }
-    .ctab:hover:not(.active) { background: var(--sand); }
-    .compose-panel { display: none; }
-    .compose-panel.active { display: block; }
-    .compose-text textarea {
-      width: 100%; border: 2px solid var(--sand); border-radius: 10px;
-      padding: 12px; font-family: 'Nunito', sans-serif; font-size: 0.95rem;
-      color: var(--soil); background: var(--cream); resize: none; min-height: 90px; outline: none;
-    }
-    .compose-text textarea:focus { border-color: var(--clay); }
-    .composer-footer { display: flex; justify-content: flex-end; margin-top: 12px; }
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:20px;padding:28px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:popIn 0.3s ease;}
+.modal-close{width:32px;height:32px;border-radius:50%;border:none;background:var(--cream);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{background:var(--earth);}
+.emg-modal{max-width:400px;text-align:center;}
+.emg-modal .emg-icon{font-size:64px;margin-bottom:12px;}
+.emg-modal h2{font-size:22px;font-weight:800;color:var(--red-alert);margin-bottom:8px;}
+.emg-modal p{color:var(--text-mid);margin-bottom:20px;font-size:15px;}
+.confirm-btn{width:100%;background:var(--red-alert);color:white;border:none;padding:16px;border-radius:var(--radius-sm);font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;animation:abpulse 1.5s infinite;}
+@keyframes abpulse{0%,100%{box-shadow:0 0 0 0 rgba(198,40,40,0.4);}50%{box-shadow:0 0 0 12px rgba(198,40,40,0);}}
+.cancel-btn{width:100%;background:var(--cream);color:var(--text-mid);border:2px solid var(--earth);padding:12px;border-radius:var(--radius-sm);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:10px;}
+.sar-modal-head{background:linear-gradient(135deg,var(--leaf),#1B5E20);margin:-28px -28px 24px;padding:28px;border-radius:20px 20px 0 0;color:white;display:flex;align-items:center;gap:16px;}
+.ann-types{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.ann-type-btn{padding:14px 10px;border:2px solid var(--earth);border-radius:var(--radius-sm);background:var(--cream);cursor:pointer;text-align:center;font-size:13px;font-weight:600;transition:all 0.2s;font-family:inherit;}
+.ann-type-btn:hover,.ann-type-btn.sel{border-color:var(--leaf);background:rgba(45,106,45,0.08);color:var(--leaf);}
+.ann-type-btn .ti{font-size:24px;display:block;margin-bottom:4px;}
+.ann-textarea{width:100%;border:2px solid var(--earth);border-radius:var(--radius-sm);padding:14px;font-size:15px;font-family:inherit;resize:vertical;min-height:100px;color:var(--text-dark);background:var(--cream);outline:none;margin-bottom:14px;}
+.ann-textarea:focus{border-color:var(--leaf-light);}
+.send-ann-btn{width:100%;background:linear-gradient(135deg,var(--leaf),#1B5E20);color:white;border:none;padding:14px;border-radius:var(--radius-sm);font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
 
-    .upload-zone {
-      border: 2px dashed var(--sand); border-radius: 12px; padding: 32px;
-      text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative;
-    }
-    .upload-zone:hover, .upload-zone.dragover { border-color: var(--clay); background: #fffbf2; }
-    .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-    .upload-zone .uz-icon { font-size: 36px; margin-bottom: 8px; }
-    .upload-zone p { font-size: 0.88rem; color: var(--clay); }
-    .upload-zone .uz-hint { font-size: 0.75rem; color: #aaa; margin-top: 4px; }
-    .preview-area { margin-top: 12px; border-radius: 10px; overflow: hidden; display: none; }
-    .preview-area.show { display: block; }
-    .preview-area img { width: 100%; border-radius: 10px; }
+/* ELDER MODE */
+body.elder-mode .top-nav{height:80px;}
+body.elder-mode .nav-logo h1{font-size:28px;}
+body.elder-mode .elder-screen{display:flex!important;}
+body.elder-mode .main-layout{display:none;}
+.elder-screen{display:none;position:fixed;inset:0;top:64px;background:#FFFDE7;flex-direction:column;align-items:center;padding:30px 20px;gap:20px;overflow-y:auto;z-index:90;}
+body.elder-mode .elder-screen{top:80px;}
+.elder-hi{font-size:26px;font-weight:800;color:var(--leaf);text-align:center;}
+.elder-sub{font-size:18px;color:var(--text-mid);text-align:center;margin-top:4px;}
+.elder-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:500px;}
+.e-btn{background:var(--white);border:3px solid var(--earth);border-radius:20px;padding:28px 16px;text-align:center;cursor:pointer;transition:all 0.2s;font-family:inherit;box-shadow:var(--shadow);}
+.e-btn:hover{border-color:var(--turmeric);transform:scale(1.03);}
+.e-btn .ei{font-size:48px;display:block;margin-bottom:10px;}
+.e-btn .el{font-size:18px;font-weight:700;color:var(--text-dark);}
+.e-btn .es{font-size:14px;color:var(--text-light);margin-top:4px;}
+.e-btn.sos{grid-column:span 2;background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border-color:var(--red-alert);}
+.e-btn.sos .el{color:var(--red-alert);font-size:22px;}
+.e-btn.sos .ei{font-size:56px;}
+.elder-rec-sec{width:100%;max-width:500px;background:var(--white);border-radius:20px;padding:28px;box-shadow:var(--shadow);border:3px solid var(--earth);text-align:center;}
+.elder-rec-sec h3{font-size:20px;font-weight:800;margin-bottom:6px;}
+.elder-rec-sec p{font-size:15px;color:var(--text-light);margin-bottom:20px;}
+.big-rec-btn{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--red-alert),#B71C1C);border:none;color:white;font-size:40px;cursor:pointer;box-shadow:0 6px 25px rgba(198,40,40,0.4);transition:all 0.2s;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.big-rec-btn.active{animation:spulse 0.8s infinite;}
+@keyframes spulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+.rec-status{font-size:16px;color:var(--text-mid);font-weight:600;}
 
-    .record-section { text-align: center; padding: 16px 0; }
-    .record-btn-wrap { display: inline-block; margin-bottom: 12px; }
-    #recordBtn {
-      width: 70px; height: 70px; border-radius: 50%;
-      background: linear-gradient(135deg, #e74c3c, #c0392b);
-      border: none; cursor: pointer; font-size: 28px; color: white;
-      box-shadow: 0 4px 20px rgba(231,76,60,0.4);
-      display: flex; align-items: center; justify-content: center;
-    }
-    #recordBtn.recording { animation: pulse-rec 1s infinite; }
-    @keyframes pulse-rec {
-      0%,100% { box-shadow: 0 4px 20px rgba(231,76,60,0.4); }
-      50%      { box-shadow: 0 4px 40px rgba(231,76,60,0.8); }
-    }
-    #recordTimer { font-size: 1.2rem; font-family: monospace; color: var(--clay); margin-bottom: 8px; }
-    #audioPreview { display: none; width: 100%; margin-top: 10px; }
+/* TOAST */
+.toast{position:fixed;bottom:30px;right:30px;background:var(--text-dark);color:white;padding:14px 22px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;box-shadow:var(--shadow-strong);z-index:9999;display:none;animation:tin 0.3s ease;}
+.toast.show{display:block;}
+@keyframes tin{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+#imgUpload{display:none;}
 
-    .upload-progress { height: 4px; background: var(--sand); border-radius: 2px; margin-top: 10px; overflow: hidden; display: none; }
-    .upload-progress.show { display: block; }
-    .upload-progress-bar { height: 100%; background: linear-gradient(90deg, var(--clay), var(--mango)); width: 0%; transition: width 0.3s; }
-
-    /* FEED */
-    .feed-header {
-      display: flex; align-items: center; gap: 10px;
-      font-family: 'Playfair Display', serif; font-size: 1.4rem;
-      color: var(--soil); margin-bottom: 18px;
-    }
-    .post-card {
-      background: var(--white); border-radius: var(--radius);
-      box-shadow: 0 4px 18px rgba(59,35,20,0.1);
-      border: 1px solid rgba(232,200,122,0.4);
-      margin-bottom: 18px; overflow: hidden;
-      animation: cardIn 0.3s ease both;
-    }
-    @keyframes cardIn { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
-    .post-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px 10px; }
-    .post-avatar { font-size: 32px; }
-    .post-meta .post-author { font-weight: 700; font-size: 0.95rem; color: var(--soil); }
-    .post-meta .post-time { font-size: 0.75rem; color: #aaa; margin-top: 1px; }
-    .post-badge {
-      margin-left: auto; background: var(--sand); color: var(--clay);
-      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
-      padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px;
-    }
-    .post-badge.img   { background: #dbeafe; color: #1d4ed8; }
-    .post-badge.audio { background: #fde8e8; color: #c0392b; }
-    .post-badge.text  { background: #e8f5e9; color: #2d6a30; }
-    .post-content { padding: 0 20px 14px; }
-    .post-content p { font-size: 0.95rem; line-height: 1.6; color: var(--soil); margin-bottom: 8px; }
-    .post-content img { width: 100%; border-radius: 10px; margin-top: 6px; cursor: pointer; }
-    .post-content audio { width: 100%; margin-top: 8px; border-radius: 8px; }
-    .post-footer { padding: 8px 20px; border-top: 1px solid var(--sand); font-size: 0.72rem; color: #bbb; font-family: monospace; }
-
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--clay); }
-    .empty-state .em-icon { font-size: 52px; margin-bottom: 12px; }
-    .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 6px; }
-    .empty-state p { font-size: 0.88rem; opacity: 0.7; }
-
-    /* LIGHTBOX */
-    .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: none; align-items: center; justify-content: center; z-index: 9998; }
-    .lightbox.show { display: flex; }
-    .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 12px; }
-    .lightbox-close { position: absolute; top: 20px; right: 24px; color: white; font-size: 36px; cursor: pointer; line-height: 1; }
-
-    /* TOAST */
-    .toast {
-      position: fixed; bottom: 24px; right: 24px;
-      background: var(--soil); color: var(--wheat);
-      padding: 12px 20px; border-radius: 10px; font-size: 0.88rem; font-weight: 600;
-      z-index: 99999; transform: translateY(100px); opacity: 0;
-      transition: all 0.3s ease; box-shadow: var(--shadow);
-    }
-    .toast.show { transform: translateY(0); opacity: 1; }
-
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-      .app-layout { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
-      .main-content { padding: 14px; max-width: 100%; }
-      .auth-card { padding: 32px 22px; }
-    }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--cream); }
-    ::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 3px; }
-  </style>
+/* RESPONSIVE */
+@media(max-width:900px){
+  .main-layout{grid-template-columns:1fr;}
+  .sidebar-left,.sidebar-right{position:static;}
+  .sidebar-right{display:none;}
+  .sidebar-left{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .sarpanch-card,.emergency-card{margin-bottom:0;}
+}
+@media(max-width:580px){
+  .sidebar-left{grid-template-columns:1fr;}
+  .nav-logo small{display:none;}
+  .nav-uname{display:none;}
+  .elder-toggle{font-size:11px;padding:5px 10px;}
+}
+</style>
 </head>
 <body>
 
-<!-- LOGIN PAGE (shown by default) -->
-<div class="page active" id="page-login">
+<!-- LOADING -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">🌾 లోడ్ అవుతున్నాం...</div>
+</div>
+
+<!-- AUTH -->
+<div id="authScreen">
   <div class="auth-card">
-    <div class="village-logo">
-      <span class="icon-hut">🏡</span>
-      <h1>GramSabha</h1>
-      <p>Your Village, Your Voice</p>
+    <div class="auth-logo">
+      <span class="big-icon">🌾</span>
+      <h2>మన పల్లె</h2>
+      <p>Chinnametpally Village · గ్రామ కమ్యూనిటీ</p>
     </div>
-    <div class="alert" id="login-alert"></div>
-    <div class="form-group">
-      <label>Email Address</label>
-      <input type="email" id="login-email" placeholder="you@village.in" autocomplete="email"/>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabIn" onclick="APP.switchTab('In')">లాగిన్ చేయండి</button>
+      <button class="auth-tab" id="tabUp" onclick="APP.switchTab('Up')">కొత్తగా చేరండి</button>
     </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password"/>
+    <input class="auth-input" id="authEmail" type="email" placeholder="📧 Email చిరునామా">
+    <input class="auth-input" id="authPass" type="password" placeholder="🔒 పాస్‌వర్డ్">
+    <div id="signInBtns">
+      <button class="btn-primary" onclick="APP.signInEmail()">✅ లాగిన్ చేయండి</button>
     </div>
-    <button class="btn btn-primary" id="loginBtn">
-      <span>Sign In to Village</span>
-      <div class="spinner" id="loginSpinner"></div>
+    <div id="signUpBtns" style="display:none">
+      <button class="btn-primary" onclick="APP.signUpEmail()">🌱 కొత్త ఖాతా తెరవండి</button>
+    </div>
+    <div class="divider">లేదా</div>
+    <button class="btn-google" onclick="APP.signInGoogle()">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 7.9 2.9L37.5 9C34.2 6.1 29.4 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16.1 19 13 24 13c3.1 0 5.8 1.1 7.9 2.9L37.5 9C34.2 6.1 29.4 4 24 4 16.1 4 9.3 8.4 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5.1l-6.3-5.2C29.2 35.5 26.7 36 24 36c-5.2 0-9.6-3-11.4-7.2l-6.5 5C9.5 40 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l6.3 5.1C41.4 35.3 44 30 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
+      Google తో లాగిన్ చేయండి
     </button>
-    <div class="google-divider"><span>or</span></div>
-    <button class="btn btn-google" id="googleLoginBtn">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Continue with Google
-    </button>
-    <div class="auth-switch">New to the village? <a id="goRegister">Create an account</a></div>
   </div>
 </div>
 
-<!-- REGISTER PAGE -->
-<div class="page" id="page-register">
-  <div class="auth-card">
-    <div class="village-logo">
-      <span class="icon-hut">🌾</span>
-      <h1>Join Village</h1>
-      <p>Create your village account</p>
+<!-- PROFILE SETUP -->
+<div id="profileSetup">
+  <div class="profile-card">
+    <h2>🙏 స్వాగతం!</h2>
+    <p class="subtitle">మీ ప్రొఫైల్ సెట్ అప్ చేసుకోండి — ఇది ఒక్కసారే!</p>
+    <label class="field-label">మీ పేరు</label>
+    <input class="profile-input" id="profileName" type="text" placeholder="మీ పూర్తి పేరు రాయండి...">
+    <label class="field-label">మీ వృత్తి / పాత్ర</label>
+    <select class="role-select" id="profileRole">
+      <option value="member">గ్రామ సభ్యుడు / సభ్యురాలు</option>
+      <option value="farmer">👨‍🌾 రైతు</option>
+      <option value="teacher">👨‍🏫 ఉపాధ్యాయుడు</option>
+      <option value="doctor">👩‍⚕️ డాక్టర్</option>
+      <option value="elder">👴 గ్రామ పెద్ద</option>
+      <option value="youth">🧑 యువకుడు / యువతి</option>
+      <option value="woman">👩 మహిళ</option>
+    </select>
+    <label class="field-label">మీ అవతార్ ఎంచుకోండి</label>
+    <div class="avatar-grid">
+      <div class="av selected" data-av="😊" onclick="APP.pickAvatar(this)">😊</div>
+      <div class="av" data-av="👨‍🌾" onclick="APP.pickAvatar(this)">👨‍🌾</div>
+      <div class="av" data-av="👩" onclick="APP.pickAvatar(this)">👩</div>
+      <div class="av" data-av="👴" onclick="APP.pickAvatar(this)">👴</div>
+      <div class="av" data-av="👵" onclick="APP.pickAvatar(this)">👵</div>
+      <div class="av" data-av="👨‍🏫" onclick="APP.pickAvatar(this)">👨‍🏫</div>
+      <div class="av" data-av="👩‍⚕️" onclick="APP.pickAvatar(this)">👩‍⚕️</div>
+      <div class="av" data-av="🧑" onclick="APP.pickAvatar(this)">🧑</div>
+      <div class="av" data-av="👱" onclick="APP.pickAvatar(this)">👱</div>
+      <div class="av" data-av="🧕" onclick="APP.pickAvatar(this)">🧕</div>
+      <div class="av" data-av="👲" onclick="APP.pickAvatar(this)">👲</div>
+      <div class="av" data-av="🧑‍💼" onclick="APP.pickAvatar(this)">🧑‍💼</div>
     </div>
-    <div class="alert" id="register-alert"></div>
-    <div class="form-group">
-      <label>Email Address</label>
-      <input type="email" id="reg-email" placeholder="you@village.in"/>
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="reg-password" placeholder="Min 6 characters"/>
-    </div>
-    <div class="form-group">
-      <label>Confirm Password</label>
-      <input type="password" id="reg-password2" placeholder="Repeat password"/>
-    </div>
-    <button class="btn btn-primary" id="registerBtn">
-      <span>Create Account</span>
-      <div class="spinner" id="registerSpinner"></div>
-    </button>
-    <div class="google-divider"><span>or</span></div>
-    <button class="btn btn-google" id="googleRegisterBtn">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Continue with Google
-    </button>
-    <div class="auth-switch">Already a member? <a id="goLogin">Sign in</a></div>
+    <button class="save-btn" onclick="APP.saveProfile()">🌾 గ్రామంలో చేరండి →</button>
   </div>
 </div>
 
-<!-- PROFILE SETUP PAGE -->
-<div class="page" id="page-profile-setup">
-  <div class="auth-card">
-    <div class="village-logo">
-      <span class="icon-hut">👤</span>
-      <h1>Your Profile</h1>
-      <p>Tell the village about yourself</p>
+<!-- MAIN APP -->
+<div id="appWrapper" style="display:none">
+  <nav class="top-nav">
+    <div class="nav-logo">
+      <div class="logo-circle">🌾</div>
+      <div><h1>మన పల్లె</h1><small>Chinnametpally Village</small></div>
     </div>
-    <div class="uid-badge">
-      <span>Your Unique Village ID</span>
-      <span id="setupUid">—</span>
-    </div>
-    <div class="alert" id="setup-alert"></div>
-    <div class="form-group">
-      <label>Full Name</label>
-      <input type="text" id="setup-name" placeholder="e.g. Ramesh Kumar"/>
-    </div>
-    <div class="form-group">
-      <label>Village Name</label>
-      <input type="text" id="setup-village" placeholder="e.g. Nandanpur"/>
-    </div>
-    <div class="form-group">
-      <label>About You (optional)</label>
-      <textarea id="setup-bio" placeholder="Farmer, 42 years…"></textarea>
-    </div>
-    <div class="form-group">
-      <label>Choose Your Avatar</label>
-      <div class="avatar-pick" id="avatarPick">
-        <div class="avatar-option selected" data-av="👨‍🌾">👨‍🌾</div>
-        <div class="avatar-option" data-av="👩‍🌾">👩‍🌾</div>
-        <div class="avatar-option" data-av="👴">👴</div>
-        <div class="avatar-option" data-av="👵">👵</div>
-        <div class="avatar-option" data-av="🧕">🧕</div>
-        <div class="avatar-option" data-av="👲">👲</div>
-        <div class="avatar-option" data-av="🧑‍💼">🧑‍💼</div>
-        <div class="avatar-option" data-av="🧑‍🍳">🧑‍🍳</div>
+    <div class="nav-right">
+      <button class="elder-toggle" id="elderToggle" onclick="APP.toggleElder()">👴 పెద్దలు</button>
+      <div class="nav-profile">
+        <div class="nav-avatar" id="navAv">😊</div>
+        <span class="nav-uname" id="navName">...</span>
       </div>
-    </div>
-    <button class="btn btn-primary" id="saveProfileBtn">
-      <span>Enter GramSabha 🏡</span>
-      <div class="spinner" id="profileSpinner"></div>
-    </button>
-  </div>
-</div>
-
-<!-- MAIN APP PAGE -->
-<div class="page" id="page-app">
-  <nav class="navbar">
-    <div class="navbar-brand">🏡 Mana Palle</div>
-    <div class="navbar-right">
-      <span class="nav-name" id="navName"></span>
-      <div class="nav-avatar" id="navAvatar">👤</div>
-      <button class="btn btn-danger btn-sm" id="signOutBtn">Sign Out</button>
+      <button class="signout-btn" onclick="APP.logout()">🚪 లాగ్అవుట్</button>
     </div>
   </nav>
-  <div class="app-layout">
-    <aside class="sidebar">
-      <div class="profile-card-mini">
-        <div class="av" id="sidebarAvatar">👤</div>
-        <div class="nm" id="sidebarName"></div>
-        <div class="vtag" id="sidebarVillage"></div>
-        <div class="uid-small" id="sidebarUid"></div>
+
+  <div class="emergency-banner" id="emgBanner">
+    <span id="emgBannerText">🚨 అత్యవసర హెచ్చరిక!</span>
+    <button class="dismiss-alert" onclick="APP.dismissBanner()">మూసు</button>
+  </div>
+
+  <div class="elder-screen" id="elderScreen">
+    <div class="elder-hi">🙏 నమస్కారం!</div>
+    <div class="elder-sub">మీకు ఏమి కావాలి?</div>
+    <div class="elder-grid">
+      <button class="e-btn" onclick="document.getElementById('elderRecSec').scrollIntoView({behavior:'smooth'})">
+        <span class="ei">🎙️</span><div class="el">మాట్లాడు</div><div class="es">Voice Post</div>
+      </button>
+      <button class="e-btn" onclick="APP.toggleElder()">
+        <span class="ei">📢</span><div class="el">వార్తలు</div><div class="es">Village News</div>
+      </button>
+      <button class="e-btn" onclick="APP.openEmg('missing')">
+        <span class="ei">📞</span><div class="el">సహాయం</div><div class="es">Help</div>
+      </button>
+      <button class="e-btn" onclick="APP.toast('👥 గ్రామ సభ్యులు చూస్తున్నాం...')">
+        <span class="ei">👥</span><div class="el">జనాలు</div><div class="es">Members</div>
+      </button>
+      <button class="e-btn sos" onclick="APP.openEmg('medical')">
+        <span class="ei">🆘</span><div class="el">అత్యవసర సహాయం — SOS</div>
+      </button>
+    </div>
+    <div class="elder-rec-sec" id="elderRecSec">
+      <h3>🎙️ మీ గొంతు నమోదు చేయండి</h3>
+      <p>బటన్ నొక్కి మీరు చెప్పాలనుకున్నది చెప్పండి<br><small>(Press and speak)</small></p>
+      <button class="big-rec-btn" id="elderRecBtn" onclick="APP.elderRecord()">🎙️</button>
+      <div class="rec-status" id="elderRecStatus">నొక్కండి & మాట్లాడండి</div>
+    </div>
+  </div>
+
+  <div class="main-layout" id="mainLayout">
+    <aside class="sidebar-left">
+      <div class="sarpanch-card">
+        <div class="saravatar">👨‍💼</div>
+        <div class="sar-name">శ్రీ రామయ్య గారు</div>
+        <div class="sar-title">⭐ సర్పంచ్ · Sarpanch</div>
+        <button class="sar-btn" onclick="APP.openSarpanch()">📢 ప్రకటన పంపు</button>
       </div>
-      <div class="sidebar-title">Navigation</div>
-      <div class="nav-item active" id="tab-feed"><span class="ni">📰</span> Village Feed</div>
-      <div class="nav-item" id="tab-my-posts"><span class="ni">📋</span> My Posts</div>
-      <div class="nav-item" id="tab-images"><span class="ni">🖼️</span> Images</div>
-      <div class="nav-item" id="tab-audio"><span class="ni">🎙️</span> Voice Recordings</div>
+      <div class="emergency-card">
+        <h3>🚨 అత్యవసర హెచ్చరిక</h3>
+        <div class="emg-btns">
+          <button class="emg-btn" onclick="APP.openEmg('missing')">🔍 వ్యక్తి తప్పిపోయాడు</button>
+          <button class="emg-btn" onclick="APP.openEmg('medical')">🏥 వైద్య అత్యవసర</button>
+          <button class="emg-btn" onclick="APP.openEmg('flood')">🌊 వరద / తుఫాను</button>
+        </div>
+      </div>
     </aside>
-    <main class="main-content">
-      <div class="composer">
-        <div class="composer-tabs">
-          <button class="ctab active" id="ctab-text">✍️ Text</button>
-          <button class="ctab" id="ctab-image">🖼️ Photo</button>
-          <button class="ctab" id="ctab-audio">🎙️ Voice</button>
+
+    <main>
+      <div class="post-creator">
+        <div class="creator-top">
+          <div class="creator-av" id="creatorAv">😊</div>
+          <input class="creator-input" id="postText" type="text" placeholder="మీ గ్రామం తో పంచుకోండి...">
         </div>
-        <div class="compose-panel active" id="panel-text">
-          <div class="compose-text">
-            <textarea id="textPost" placeholder="Share something with your village…"></textarea>
-          </div>
-          <div class="composer-footer">
-            <button class="btn btn-primary" id="postTextBtn" style="width:auto;padding:11px 28px;">Post to Village 🌾</button>
-          </div>
+        <div class="media-prev" id="imgPrev"><img id="imgPreviewEl" src="" alt="preview"></div>
+        <div class="media-prev" id="audPrev">
+          <div class="audio-prev-box">🎙️ <span id="audPrevLbl">Voice recording ready</span></div>
         </div>
-        <div class="compose-panel" id="panel-image">
-          <div class="upload-zone" id="imageZone">
-            <input type="file" id="imageFile" accept="image/*"/>
-            <div class="uz-icon">📸</div>
-            <p>Click or drag a photo here</p>
-            <div class="uz-hint">JPG, PNG, WEBP — up to 10 MB</div>
-          </div>
-          <div class="preview-area" id="imagePreviewArea">
-            <img id="imagePreview" src="" alt="preview"/>
-          </div>
-          <div class="form-group" style="margin-top:12px;margin-bottom:0;">
-            <input type="text" id="imageCaption" placeholder="Add a caption (optional)"/>
-          </div>
-          <div class="upload-progress" id="imgProgress"><div class="upload-progress-bar" id="imgProgressBar"></div></div>
-          <div class="composer-footer">
-            <button class="btn btn-primary" id="postImageBtn" style="width:auto;padding:11px 28px;">Share Photo 📸</button>
-          </div>
+        <div class="creator-actions">
+          <button class="action-btn" onclick="document.getElementById('imgUpload').click()">📷 ఫోటో</button>
+          <button class="action-btn" id="recBtn" onclick="APP.toggleRecord()">🎙️ గొంతు</button>
+          <button class="action-btn" onclick="APP.addLocation()">📍 స్థానం</button>
         </div>
-        <div class="compose-panel" id="panel-audio">
-          <div class="record-section">
-            <div class="record-btn-wrap">
-              <button id="recordBtn">🎙️</button>
-            </div>
-            <div id="recordTimer">00:00</div>
-            <p style="font-size:0.82rem;color:var(--clay);margin-bottom:10px;">Tap to start / stop recording</p>
-            <audio id="audioPreview" controls></audio>
-          </div>
-          <div class="form-group" style="margin-bottom:0;">
-            <input type="text" id="audioCaption" placeholder="What is this recording about?"/>
-          </div>
-          <div class="upload-progress" id="audProgress"><div class="upload-progress-bar" id="audProgressBar"></div></div>
-          <div class="composer-footer">
-            <button class="btn btn-primary" id="postAudioBtn" style="width:auto;padding:11px 28px;">Share Recording 🎙️</button>
-          </div>
+        <button class="post-btn" id="postSubmitBtn" onclick="APP.submitPost()">పోస్ట్ చేయి ✅</button>
+        <input type="file" id="imgUpload" accept="image/*" onchange="APP.onImagePick(event)">
+      </div>
+
+      <div class="feed-tabs">
+        <button class="tab-btn active" onclick="APP.filter('all',this)">అన్నీ</button>
+        <button class="tab-btn" onclick="APP.filter('announcement',this)">📢 ప్రకటనలు</button>
+        <button class="tab-btn" onclick="APP.filter('photo',this)">📷 ఫోటోలు</button>
+        <button class="tab-btn" onclick="APP.filter('audio',this)">🎙️ వాయిస్</button>
+        <button class="tab-btn" onclick="APP.filter('alert',this)">🚨 హెచ్చరికలు</button>
+      </div>
+      <div id="feedContainer"><div class="empty-feed"><div class="ef-icon">🌾</div>లోడ్ అవుతున్నాం...</div></div>
+    </main>
+
+    <aside class="sidebar-right">
+      <div class="widget-card">
+        <div class="widget-title">📊 గ్రామ వివరాలు</div>
+        <div class="vstat"><span class="vstat-label">👥 జనాభా</span><span class="vstat-val">2,847</span></div>
+        <div class="vstat"><span class="vstat-label">🏠 ఇళ్ళు</span><span class="vstat-val">612</span></div>
+        <div class="vstat"><span class="vstat-label">📱 చురుకైన వారు</span><span class="vstat-val" id="activeCount">47</span></div>
+        <div class="vstat"><span class="vstat-label">📢 మొత్తం పోస్టులు</span><span class="vstat-val" id="postCountStat">0</span></div>
+      </div>
+      <div class="widget-card">
+        <div class="widget-title">🟢 ఆన్‌లైన్ లో ఉన్నారు</div>
+        <div class="member-row"><div class="mem-av" style="background:#E8F5E9">👨‍🌾</div><div class="mem-name">రమేష్ గారు</div><div class="dot-online"></div></div>
+        <div class="member-row"><div class="mem-av" style="background:#FFF3E0">👩</div><div class="mem-name">లక్ష్మి అమ్మ</div><div class="dot-online"></div></div>
+        <div class="member-row"><div class="mem-av" style="background:#E3F2FD">👨‍🏫</div><div class="mem-name">వెంకటేశ్ మాస్టారు</div><div class="dot-online"></div></div>
+        <div class="member-row"><div class="mem-av" style="background:#FCE4EC">👩‍⚕️</div><div class="mem-name">సీత డాక్టర్</div><div class="dot-online"></div></div>
+        <div class="member-row"><div class="mem-av" style="background:#F3E5F5">👴</div><div class="mem-name">నాగయ్య తాత</div><div class="dot-online"></div></div>
+      </div>
+      <div class="widget-card">
+        <div class="widget-title">📅 రాబోయే కార్యక్రమాలు</div>
+        <div style="font-size:13px;color:var(--text-mid);line-height:1.8">
+          <div style="padding:8px 0;border-bottom:1px solid var(--earth)">🌾 <strong>Mar 28</strong> — రైతు సదస్సు</div>
+          <div style="padding:8px 0;border-bottom:1px solid var(--earth)">📚 <strong>Apr 2</strong> — పాఠశాల సమావేశం</div>
+          <div style="padding:8px 0">🏥 <strong>Apr 5</strong> — వైద్య శిబిరం</div>
         </div>
       </div>
-      <div class="feed-header">📰 <span id="feedTitle">Village Feed</span></div>
-      <div id="feed"></div>
-    </main>
+    </aside>
+  </div>
+
+  <!-- EMERGENCY MODAL -->
+  <div class="modal-overlay" id="emgModal">
+    <div class="modal emg-modal">
+      <div class="emg-icon" id="emgModalIcon">🆘</div>
+      <h2 id="emgModalTitle">అత్యవసర హెచ్చరిక</h2>
+      <p id="emgModalDesc">ఈ హెచ్చరిక గ్రామంలోని అందరికీ వెంటనే పంపబడుతుంది.</p>
+      <button class="confirm-btn" onclick="APP.sendAlert()">🚨 అందరికీ పంపు — ALERT ALL</button>
+      <button class="cancel-btn" onclick="APP.closeModal('emgModal')">రద్దు చేయి</button>
+    </div>
+  </div>
+
+  <!-- SARPANCH MODAL -->
+  <div class="modal-overlay" id="sarModal">
+    <div class="modal" style="max-width:520px">
+      <div class="sar-modal-head">
+        <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">👨‍💼</div>
+        <div><div style="font-size:18px;font-weight:800">శ్రీ రామయ్య గారు</div><div style="font-size:13px;opacity:0.8">సర్పంచ్ · Chinnametpally</div></div>
+        <button class="modal-close" style="margin-left:auto;background:rgba(255,255,255,0.2);color:white" onclick="APP.closeModal('sarModal')">✕</button>
+      </div>
+      <p style="font-size:14px;color:var(--text-light);margin-bottom:14px">ప్రకటన రకం ఎంచుకోండి:</p>
+      <div class="ann-types">
+        <button class="ann-type-btn sel" onclick="APP.pickAnnType(this,'general')"><span class="ti">📢</span>సాధారణ</button>
+        <button class="ann-type-btn" onclick="APP.pickAnnType(this,'water')"><span class="ti">💧</span>నీళ్ళు</button>
+        <button class="ann-type-btn" onclick="APP.pickAnnType(this,'road')"><span class="ti">🛣️</span>రోడ్లు</button>
+        <button class="ann-type-btn" onclick="APP.pickAnnType(this,'meeting')"><span class="ti">🤝</span>సభ</button>
+      </div>
+      <textarea class="ann-textarea" id="annText" placeholder="మీ ప్రకటన ఇక్కడ టైప్ చేయండి..."></textarea>
+      <button class="send-ann-btn" onclick="APP.sendAnnouncement()">📢 అందరికీ పంపు</button>
+    </div>
   </div>
 </div>
 
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox">
-  <span class="lightbox-close" id="lightboxClose">✕</span>
-  <img id="lightboxImg" src="" alt=""/>
-</div>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- ✅ SCRIPT AT END OF BODY — DOM is fully ready here -->
 <script type="module">
-  import { initializeApp }                                                    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-           onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, addDoc,
-           query, orderBy, onSnapshot, serverTimestamp }                      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL }                     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+         GoogleAuthProvider, onAuthStateChanged, signOut, updateProfile }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc,
+         onSnapshot, query, orderBy, serverTimestamp, getDoc, setDoc, limit }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getStorage, ref, uploadBytes, getDownloadURL }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
 
-  // ══════════════════════════════════════════════
-  //  🔥 PASTE YOUR FIREBASE CONFIG HERE
-  // ══════════════════════════════════════════════
-  const firebaseConfig = {
-     apiKey: "AIzaSyBS6uMAmKusD7TLWDIUN4SXQV9rp5uYSVk",
+/* ============================================================
+   🔥 REPLACE WITH YOUR FIREBASE CONFIG
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyBS6uMAmKusD7TLWDIUN4SXQV9rp5uYSVk",
   authDomain: "mana-gramam-8c08e.firebaseapp.com",
   projectId: "mana-gramam-8c08e",
   storageBucket: "mana-gramam-8c08e.firebasestorage.app",
   messagingSenderId: "116411130774",
   appId: "1:116411130774:web:53239be6d2e83ad2e633b7",
-  };
+};
 
-  const app      = initializeApp(firebaseConfig);
-  const auth     = getAuth(app);
-  const db       = getFirestore(app);
-  const storage  = getStorage(app);
-  const provider = new GoogleAuthProvider();
+const fbApp = initializeApp(firebaseConfig);
+const auth  = getAuth(fbApp);
+const db    = getFirestore(fbApp);
+const st    = getStorage(fbApp);
+const gp    = new GoogleAuthProvider();
 
-  // ── STATE ──
-  let currentUser = null, userProfile = null;
-  let mediaRecorder = null, audioChunks = [], recordInterval = null, recordSeconds = 0;
-  let selectedAvatar = '👨‍🌾';
-  let unsubFeed = null;
+// ---- STATE ----
+let currentUser    = null;
+let userProfile    = null;
+let unsubPosts     = null;
+let allPosts       = [];
+let activeFilter   = 'all';
+let isElderMode    = false;
+let isRecording    = false;
+let elderRecording = false;
+let mediaRec       = null;
+let audioChunks    = [];
+let recBlob        = null;
+let imgFile        = null;
+let hasAudio       = false;
+let hasImage       = false;
+let curEmgType     = null;
+let curAnnType     = 'general';
 
-  // ── HELPERS ──
-  function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+const EMG = {
+  missing:{ icon:'🔍', title:'వ్యక్తి తప్పిపోయాడు!',   desc:'తప్పిపోయిన వ్యక్తి హెచ్చరిక అందరికీ వెంటనే పంపబడుతుంది.', banner:'🔍 అత్యవసర హెచ్చరిక: వ్యక్తి తప్పిపోయాడు! అందరూ సహాయం చేయండి!' },
+  medical:{ icon:'🏥', title:'వైద్య అత్యవసర!',         desc:'వైద్య అత్యవసర హెచ్చరిక అందరికీ వెంటనే పంపబడుతుంది.',        banner:'🏥 అత్యవసర హెచ్చరిక: వైద్య అత్యవసర పరిస్థితి!' },
+  flood:  { icon:'🌊', title:'వరద / తుఫాను హెచ్చరిక!', desc:'వరద హెచ్చరిక అందరికీ వెంటనే పంపబడుతుంది.',                  banner:'🌊 అత్యవసర హెచ్చరిక: వరద ప్రమాదం! వెంటనే సురక్షిత ప్రదేశానికి వెళ్ళండి!' }
+};
+const ANN = { general:'📢', water:'💧', road:'🛣️', meeting:'🤝' };
+const ROLE_LBL = { farmer:'రైతు', teacher:'ఉపాధ్యాయుడు', doctor:'డాక్టర్', elder:'గ్రామ పెద్ద', youth:'యువకుడు', woman:'మహిళ', member:'గ్రామ సభ్యుడు' };
+const ROLE_BG  = { farmer:'linear-gradient(135deg,#E8F5E9,#C8E6C9)', teacher:'linear-gradient(135deg,#E3F2FD,#BBDEFB)', doctor:'linear-gradient(135deg,#FCE4EC,#F8BBD9)', elder:'linear-gradient(135deg,#F3E5F5,#E1BEE7)', youth:'linear-gradient(135deg,#FFF3E0,#FFE0B2)', woman:'linear-gradient(135deg,#FFF8E1,#FFE082)', member:'linear-gradient(135deg,#E1F5FE,#B3E5FC)' };
+
+// ---- UTILS ----
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('show'), 3200);
+}
+function showLoading(v){ document.getElementById('loadingOverlay').style.display = v?'flex':'none'; }
+function timeAgo(d){
+  if(!d) return 'ఇప్పుడే';
+  const s=(Date.now()-d.getTime())/1000;
+  if(s<60) return 'ఇప్పుడే';
+  if(s<3600) return Math.floor(s/60)+' నిమిషాల క్రితం';
+  if(s<86400) return Math.floor(s/3600)+' గంటల క్రితం';
+  return Math.floor(s/86400)+' రోజుల క్రితం';
+}
+function esc(s){ if(typeof s!=='string') return s||''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ---- SCREENS ----
+function showScreen(id){
+  showLoading(false);
+  document.getElementById('authScreen').style.display    = id==='authScreen'    ? 'flex'  : 'none';
+  document.getElementById('profileSetup').style.display  = id==='profileSetup'  ? 'flex'  : 'none';
+  document.getElementById('appWrapper').style.display    = id==='appWrapper'    ? 'block' : 'none';
+}
+
+function showApp(){
+  showScreen('appWrapper');
+  const p = userProfile;
+  if(p){
+    const na=document.getElementById('navAv'); if(na){na.textContent=p.avatar;na.style.background=p.avatarBg||'';}
+    const nn=document.getElementById('navName'); if(nn) nn.textContent=p.name;
+    const ca=document.getElementById('creatorAv'); if(ca){ca.textContent=p.avatar;ca.style.background=p.avatarBg||'';}
   }
-  function showAlert(id, msg, type = 'error') {
-    const el = document.getElementById(id);
-    el.textContent = msg; el.className = 'alert ' + type;
+  startListening();
+}
+
+// ---- AUTH ----
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    currentUser=user;
+    try{
+      const snap=await getDoc(doc(db,'users',user.uid));
+      if(snap.exists()){ userProfile=snap.data(); showApp(); }
+      else showScreen('profileSetup');
+    }catch(e){ toast('❌ '+e.message); showScreen('authScreen'); }
+  } else {
+    currentUser=null; userProfile=null;
+    if(unsubPosts){ unsubPosts(); unsubPosts=null; }
+    showScreen('authScreen');
   }
-  function clearAlert(id) {
-    const el = document.getElementById(id);
-    el.className = 'alert'; el.textContent = '';
+});
+
+// ---- FIRESTORE LISTENER ----
+function startListening(){
+  if(unsubPosts){ unsubPosts(); }
+  const q=query(collection(db,'posts'),orderBy('createdAt','desc'),limit(60));
+  unsubPosts=onSnapshot(q,(snap)=>{
+    allPosts=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderFeed();
+  },(e)=>toast('❌ '+e.message));
+}
+
+function renderFeed(){
+  const container=document.getElementById('feedContainer'); if(!container) return;
+  const posts=activeFilter==='all'?allPosts:allPosts.filter(p=>p.type===activeFilter);
+  const stat=document.getElementById('postCountStat'); if(stat) stat.textContent=allPosts.length;
+  if(posts.length===0){
+    container.innerHTML=`<div class="empty-feed"><div class="ef-icon">🌾</div>${activeFilter==='all'?'ఇంకా పోస్టులు లేవు. మొదటి పోస్ట్ మీరే చేయండి!':'ఈ విభాగంలో పోస్టులు లేవు.'}</div>`;
+    return;
   }
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
-  function setLoading(btnId, spinnerId, state) {
-    document.getElementById(btnId).disabled = state;
-    document.getElementById(spinnerId).style.display = state ? 'block' : 'none';
-  }
-  function escHtml(s = '') {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  function friendlyError(code) {
-    const m = {
-      'auth/invalid-email':'Invalid email address.',
-      'auth/user-not-found':'No account with that email.',
-      'auth/wrong-password':'Wrong password.',
-      'auth/email-already-in-use':'Email already registered.',
-      'auth/weak-password':'Password must be at least 6 characters.',
-      'auth/invalid-credential':'Invalid email or password.',
-      'auth/too-many-requests':'Too many attempts. Try again later.',
-      'auth/popup-closed-by-user':'Google sign-in was cancelled.',
-    };
-    return m[code] || 'Something went wrong. Please try again.';
-  }
+  container.innerHTML='';
+  posts.forEach(p=>container.appendChild(buildPost(p)));
+}
 
-  // ── AUTH STATE (single source of truth for routing) ──
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      currentUser = null; userProfile = null;
-      showPage('page-login');
-      return;
-    }
-    currentUser = user;
-    try {
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      if (!snap.exists()) {
-        if (user.displayName) document.getElementById('setup-name').value = user.displayName;
-        document.getElementById('setupUid').textContent = user.uid.slice(0, 8).toUpperCase();
-        showPage('page-profile-setup');
-      } else {
-        userProfile = snap.data();
-        loadApp();
-      }
-    } catch(e) {
-      console.error(e);
-      showPage('page-login');
-    }
-  });
+function buildPost(p){
+  const div=document.createElement('div');
+  div.className='post-card'+(p.type==='announcement'?' announcement':p.type==='alert'?' alert-post':'');
+  const liked=(p.likedBy||[]).includes(currentUser?.uid);
+  const when=p.createdAt?.toDate?timeAgo(p.createdAt.toDate()):'ఇప్పుడే';
+  const isOwn=p.uid===currentUser?.uid;
+  let media='';
+  if(p.imageURL) media=`<img class="post-img" src="${esc(p.imageURL)}" alt="post" loading="lazy">`;
+  else if(p.audioURL) media=`
+    <div class="post-audio-wrap" data-url="${esc(p.audioURL)}" onclick="APP.playAudio(this)">
+      <div class="play-btn">▶</div>
+      <div class="waves"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>
+      <span class="audio-lbl">🎙️ వాయిస్ సందేశం</span>
+    </div>`;
+  div.innerHTML=`
+    <div class="post-header">
+      <div class="post-av" style="background:${p.avatarBg||'#eee'}">${esc(p.avatar||'😊')}</div>
+      <div class="post-meta">
+        <div class="post-author">${esc(p.author||'')}</div>
+        <div class="post-time">${esc(p.role||'')} · ${when}</div>
+      </div>
+      ${isOwn?`<button class="del-btn" onclick="APP.deletePost('${p.id}')">🗑️</button>`:''}
+    </div>
+    <div class="post-body">${esc(p.text||'')}</div>
+    ${media}
+    <div class="post-footer">
+      <button class="react-btn${liked?' liked':''}" onclick="APP.toggleLike('${p.id}')">${liked?'❤️':'🤍'} ${p.likes||0}</button>
+      <button class="react-btn" onclick="APP.toast('💬 వ్యాఖ్యలు త్వరలో...')">💬 ${p.comments||0}</button>
+      <button class="react-btn" onclick="APP.copyLink()">📤 పంచు</button>
+    </div>`;
+  return div;
+}
 
-  // ── NAVIGATION ──
-  document.getElementById('goRegister').onclick = () => showPage('page-register');
-  document.getElementById('goLogin').onclick    = () => showPage('page-login');
+// ---- APP OBJECT ----
+window.APP = {
+  toast,
 
-  // ── EMAIL LOGIN ──
-  document.getElementById('loginBtn').addEventListener('click', async () => {
-    clearAlert('login-alert');
-    const email = document.getElementById('login-email').value.trim();
-    const pass  = document.getElementById('login-password').value;
-    if (!email || !pass) { showAlert('login-alert', 'Please fill in all fields.'); return; }
-    setLoading('loginBtn', 'loginSpinner', true);
-    try {
-      await signInWithEmailAndPassword(auth, email, pass);
-    } catch(e) {
-      showAlert('login-alert', friendlyError(e.code));
-    } finally {
-      setLoading('loginBtn', 'loginSpinner', false);
-    }
-  });
+  switchTab(t){
+    document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab'+t).classList.add('active');
+    document.getElementById('signInBtns').style.display=t==='In'?'block':'none';
+    document.getElementById('signUpBtns').style.display=t==='Up'?'block':'none';
+  },
 
-  // ── EMAIL REGISTER ──
-  document.getElementById('registerBtn').addEventListener('click', async () => {
-    clearAlert('register-alert');
-    const email = document.getElementById('reg-email').value.trim();
-    const pass  = document.getElementById('reg-password').value;
-    const pass2 = document.getElementById('reg-password2').value;
-    if (!email || !pass) { showAlert('register-alert', 'Please fill in all fields.'); return; }
-    if (pass !== pass2)  { showAlert('register-alert', 'Passwords do not match.'); return; }
-    if (pass.length < 6) { showAlert('register-alert', 'Password must be at least 6 characters.'); return; }
-    setLoading('registerBtn', 'registerSpinner', true);
-    try {
-      await createUserWithEmailAndPassword(auth, email, pass);
-    } catch(e) {
-      showAlert('register-alert', friendlyError(e.code));
-    } finally {
-      setLoading('registerBtn', 'registerSpinner', false);
-    }
-  });
+  async signInGoogle(){
+    try{ showLoading(true); await signInWithPopup(auth,gp); }
+    catch(e){ showLoading(false); toast('❌ Google లాగిన్ విఫలమైంది'); }
+  },
 
-  // ── GOOGLE SIGN-IN ──
-  async function googleSignIn(alertId) {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch(e) {
-      showAlert(alertId, friendlyError(e.code));
-    }
-  }
-  document.getElementById('googleLoginBtn').addEventListener('click',    () => googleSignIn('login-alert'));
-  document.getElementById('googleRegisterBtn').addEventListener('click', () => googleSignIn('register-alert'));
+  async signInEmail(){
+    const e=document.getElementById('authEmail').value.trim();
+    const p=document.getElementById('authPass').value;
+    if(!e||!p){ toast('⚠️ Email & పాస్‌వర్డ్ నమోదు చేయండి'); return; }
+    try{ showLoading(true); await signInWithEmailAndPassword(auth,e,p); }
+    catch(err){ showLoading(false); toast(err.code==='auth/invalid-credential'||err.code==='auth/user-not-found'?'❌ తప్పు email లేదా పాస్‌వర్డ్':'❌ '+err.message); }
+  },
 
-  // ── PROFILE SETUP ──
-  document.getElementById('avatarPick').addEventListener('click', e => {
-    const opt = e.target.closest('.avatar-option');
-    if (!opt) return;
-    document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
-    opt.classList.add('selected');
-    selectedAvatar = opt.dataset.av;
-  });
+  async signUpEmail(){
+    const e=document.getElementById('authEmail').value.trim();
+    const p=document.getElementById('authPass').value;
+    if(!e||!p){ toast('⚠️ Email & పాస్‌వర్డ్ నమోదు చేయండి'); return; }
+    if(p.length<6){ toast('⚠️ పాస్‌వర్డ్ కనీసం 6 అక్షరాలు'); return; }
+    try{ showLoading(true); await createUserWithEmailAndPassword(auth,e,p); }
+    catch(err){ showLoading(false); toast(err.code==='auth/email-already-in-use'?'❌ ఈ email ఇప్పటికే వాడబడింది':'❌ '+err.message); }
+  },
 
-  document.getElementById('saveProfileBtn').addEventListener('click', async () => {
-    clearAlert('setup-alert');
-    const name    = document.getElementById('setup-name').value.trim();
-    const village = document.getElementById('setup-village').value.trim();
-    const bio     = document.getElementById('setup-bio').value.trim();
-    if (!name || !village) { showAlert('setup-alert', 'Name and village are required.'); return; }
-    setLoading('saveProfileBtn', 'profileSpinner', true);
-    try {
-      const profile = {
-        uid: currentUser.uid, name, village, bio,
-        avatar: selectedAvatar, email: currentUser.email,
-        createdAt: new Date().toISOString(),
-        shortId: currentUser.uid.slice(0, 8).toUpperCase()
-      };
-      await setDoc(doc(db, 'users', currentUser.uid), profile);
-      userProfile = profile;
-      loadApp();
-    } catch(e) {
-      showAlert('setup-alert', 'Error saving profile: ' + e.message);
-    } finally {
-      setLoading('saveProfileBtn', 'profileSpinner', false);
-    }
-  });
+  async logout(){
+    if(unsubPosts){ unsubPosts(); unsubPosts=null; }
+    await signOut(auth); toast('👋 లాగ్అవుట్ అయింది');
+  },
 
-  // ── LOAD APP ──
-  function loadApp() {
-    document.getElementById('navName').textContent        = userProfile.name;
-    document.getElementById('navAvatar').textContent      = userProfile.avatar;
-    document.getElementById('sidebarAvatar').textContent  = userProfile.avatar;
-    document.getElementById('sidebarName').textContent    = userProfile.name;
-    document.getElementById('sidebarVillage').textContent = '📍 ' + userProfile.village;
-    document.getElementById('sidebarUid').textContent     = 'ID: ' + userProfile.shortId;
-    showPage('page-app');
-    loadFeed('all');
-  }
+  pickAvatar(el){
+    document.querySelectorAll('.av').forEach(a=>a.classList.remove('selected'));
+    el.classList.add('selected');
+  },
 
-  // ── SIGN OUT ──
-  document.getElementById('signOutBtn').addEventListener('click', async () => {
-    if (unsubFeed) { unsubFeed(); unsubFeed = null; }
-    await signOut(auth);
-  });
+  async saveProfile(){
+    const name=document.getElementById('profileName').value.trim();
+    const role=document.getElementById('profileRole').value;
+    const av=document.querySelector('.av.selected')?.dataset.av||'😊';
+    if(!name){ toast('⚠️ మీ పేరు నమోదు చేయండి'); return; }
+    showLoading(true);
+    try{
+      const profile={ uid:currentUser.uid, name, role, avatar:av, avatarBg:ROLE_BG[role]||ROLE_BG.member, email:currentUser.email||'', joinedAt:serverTimestamp() };
+      await setDoc(doc(db,'users',currentUser.uid),profile);
+      await updateProfile(currentUser,{displayName:name});
+      userProfile=profile; showApp(); toast('✅ స్వాగతం '+name+' గారు! 🙏');
+    }catch(e){ showLoading(false); toast('❌ '+e.message); }
+  },
 
-  // ── TABS ──
-  const tabMap = { 'tab-feed':'all', 'tab-my-posts':'mine', 'tab-images':'images', 'tab-audio':'audio' };
-  const titleMap = { all:'Village Feed', mine:'My Posts', images:'Photos', audio:'Voice Recordings' };
-  Object.keys(tabMap).forEach(tabId => {
-    document.getElementById(tabId).addEventListener('click', () => {
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      const mode = tabMap[tabId];
-      document.getElementById('feedTitle').textContent = titleMap[mode];
-      if (unsubFeed) { unsubFeed(); unsubFeed = null; }
-      loadFeed(mode);
-    });
-  });
-
-  // ── COMPOSER TABS ──
-  ['text','image','audio'].forEach(type => {
-    document.getElementById('ctab-' + type).addEventListener('click', () => {
-      ['text','image','audio'].forEach(t => {
-        document.getElementById('panel-' + t).classList.toggle('active', t === type);
-        document.getElementById('ctab-' + t).classList.toggle('active', t === type);
+  async submitPost(){
+    const text=document.getElementById('postText').value.trim();
+    if(!text&&!hasImage&&!hasAudio){ toast('⚠️ ఏదైనా రాయండి లేదా ఫోటో/గొంతు జోడించండి'); return; }
+    const btn=document.getElementById('postSubmitBtn');
+    btn.disabled=true; btn.textContent='⏳ పోస్ట్ చేస్తున్నాం...';
+    try{
+      let imageURL=null, audioURL=null;
+      if(imgFile){ const r=ref(st,`posts/${currentUser.uid}/${Date.now()}_img`); await uploadBytes(r,imgFile); imageURL=await getDownloadURL(r); }
+      if(recBlob){ const r=ref(st,`posts/${currentUser.uid}/${Date.now()}.webm`); await uploadBytes(r,recBlob); audioURL=await getDownloadURL(r); }
+      await addDoc(collection(db,'posts'),{
+        type:imgFile?'photo':recBlob?'audio':'text',
+        text:text||(recBlob?'వాయిస్ సందేశం':''),
+        author:userProfile.name, role:ROLE_LBL[userProfile.role]||'గ్రామ సభ్యుడు',
+        avatar:userProfile.avatar, avatarBg:userProfile.avatarBg,
+        uid:currentUser.uid, imageURL, audioURL,
+        likes:0, likedBy:[], comments:0, createdAt:serverTimestamp()
       });
-    });
-  });
+      document.getElementById('postText').value='';
+      document.getElementById('imgPrev').classList.remove('show');
+      document.getElementById('audPrev').classList.remove('show');
+      hasImage=false; hasAudio=false; imgFile=null; recBlob=null;
+      document.getElementById('recBtn').textContent='🎙️ గొంతు';
+      document.getElementById('recBtn').classList.remove('recording');
+      toast('✅ పోస్ట్ విజయవంతంగా పంచబడింది!');
+    }catch(e){ toast('❌ '+e.message); }
+    btn.disabled=false; btn.textContent='పోస్ట్ చేయి ✅';
+  },
 
-  // ── IMAGE PREVIEW ──
-  document.getElementById('imageFile').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      document.getElementById('imagePreview').src = ev.target.result;
-      document.getElementById('imagePreviewArea').classList.add('show');
-    };
-    reader.readAsDataURL(file);
-  });
-  const zone = document.getElementById('imageZone');
-  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('dragover'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-  zone.addEventListener('drop', e => {
-    e.preventDefault(); zone.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = ev => {
-        document.getElementById('imagePreview').src = ev.target.result;
-        document.getElementById('imagePreviewArea').classList.add('show');
-      };
-      reader.readAsDataURL(file);
-    }
-  });
+  async toggleLike(postId){
+    if(!currentUser) return;
+    try{
+      const ref_=doc(db,'posts',postId);
+      const snap=await getDoc(ref_);
+      if(!snap.exists()) return;
+      const d=snap.data(); const lb=d.likedBy||[];
+      const already=lb.includes(currentUser.uid);
+      await updateDoc(ref_,{ likedBy:already?lb.filter(u=>u!==currentUser.uid):[...lb,currentUser.uid], likes:already?Math.max(0,(d.likes||0)-1):(d.likes||0)+1 });
+    }catch(e){ toast('❌ '+e.message); }
+  },
 
-  // ── RECORDING ──
-  document.getElementById('recordBtn').addEventListener('click', async () => {
-    const btn = document.getElementById('recordBtn');
-    if (!mediaRecorder || mediaRecorder.state === 'inactive') {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
-        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-        mediaRecorder.onstop = () => {
-          const blob = new Blob(audioChunks, { type: 'audio/webm' });
-          const ap = document.getElementById('audioPreview');
-          ap.src = URL.createObjectURL(blob); ap.style.display = 'block';
-          stream.getTracks().forEach(t => t.stop());
-        };
-        mediaRecorder.start();
-        btn.classList.add('recording'); btn.textContent = '⏹️';
-        recordSeconds = 0;
-        recordInterval = setInterval(() => {
-          recordSeconds++;
-          const m = String(Math.floor(recordSeconds/60)).padStart(2,'0');
-          const s = String(recordSeconds%60).padStart(2,'0');
-          document.getElementById('recordTimer').textContent = m + ':' + s;
-        }, 1000);
-      } catch(e) { showToast('Microphone permission denied'); }
+  async deletePost(postId){
+    if(!confirm('ఈ పోస్ట్ తొలగించాలా?')) return;
+    try{ await deleteDoc(doc(db,'posts',postId)); toast('🗑️ పోస్ట్ తొలగించబడింది'); }
+    catch(e){ toast('❌ '+e.message); }
+  },
+
+  onImagePick(e){
+    const file=e.target.files[0]; if(!file) return;
+    imgFile=file;
+    const fr=new FileReader();
+    fr.onload=ev=>{ document.getElementById('imgPreviewEl').src=ev.target.result; document.getElementById('imgPrev').classList.add('show'); hasImage=true; };
+    fr.readAsDataURL(file);
+  },
+
+  async toggleRecord(){
+    if(!isRecording){
+      try{
+        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+        mediaRec=new MediaRecorder(stream); audioChunks=[];
+        mediaRec.ondataavailable=e=>audioChunks.push(e.data);
+        mediaRec.onstop=()=>{ recBlob=new Blob(audioChunks,{type:'audio/webm'}); hasAudio=true; document.getElementById('audPrevLbl').textContent='🎙️ రికార్డింగ్ సిద్ధం ✅'; document.getElementById('audPrev').classList.add('show'); stream.getTracks().forEach(t=>t.stop()); };
+        mediaRec.start(); isRecording=true;
+        const btn=document.getElementById('recBtn'); btn.classList.add('recording'); btn.textContent='⏹ ఆపు';
+        toast('🔴 రికార్డింగ్ మొదలైంది...');
+      }catch{ toast('🎙️ మైక్రోఫోన్ అనుమతి అవసరం'); }
     } else {
-      mediaRecorder.stop(); btn.classList.remove('recording'); btn.textContent = '🎙️';
-      clearInterval(recordInterval);
+      mediaRec?.stop(); isRecording=false;
+      const btn=document.getElementById('recBtn'); btn.classList.remove('recording'); btn.textContent='🎙️ గొంతు ✅';
+      toast('✅ రికార్డింగ్ సిద్ధంగా ఉంది');
     }
-  });
+  },
 
-  // ── POST SUBMISSION ──
-  document.getElementById('postTextBtn').addEventListener('click', async () => {
-    if (!currentUser || !userProfile) return;
-    const text = document.getElementById('textPost').value.trim();
-    if (!text) { showToast('Please write something first!'); return; }
-    await savePost({ type: 'text', text });
-    document.getElementById('textPost').value = '';
-  });
+  addLocation(){
+    if(!navigator.geolocation){ toast('📍 Location supported కాదు'); return; }
+    navigator.geolocation.getCurrentPosition(
+      ()=>{ document.getElementById('postText').value+=' 📍[స్థానం జోడించబడింది]'; toast('📍 స్థానం జోడించబడింది'); },
+      ()=>toast('📍 స్థానం అనుమతి తిరస్కరించబడింది')
+    );
+  },
 
-  document.getElementById('postImageBtn').addEventListener('click', async () => {
-    if (!currentUser || !userProfile) return;
-    const file = document.getElementById('imageFile').files[0];
-    if (!file) { showToast('Please select an image first!'); return; }
-    const caption = document.getElementById('imageCaption').value.trim();
-    showProgress('imgProgress', 'imgProgressBar');
-    try {
-      const url = await uploadFile(file, 'images/' + currentUser.uid + '_' + Date.now() + '_' + file.name, 'imgProgressBar');
-      await savePost({ type: 'image', imageUrl: url, caption });
-      document.getElementById('imageFile').value = '';
-      document.getElementById('imagePreviewArea').classList.remove('show');
-      document.getElementById('imageCaption').value = '';
-    } catch(e) { showToast('Upload failed: ' + e.message); }
-    hideProgress('imgProgress');
-  });
+  playAudio(el){
+    const url=el.dataset.url; if(!url) return;
+    if(!el._audio) el._audio=new Audio(url);
+    const a=el._audio; const btn=el.querySelector('.play-btn');
+    if(a.paused){ a.play(); btn.textContent='⏸'; toast('🎙️ వింటున్నాం...'); }
+    else{ a.pause(); btn.textContent='▶'; }
+    a.onended=()=>{ btn.textContent='▶'; };
+  },
 
-  document.getElementById('postAudioBtn').addEventListener('click', async () => {
-    if (!currentUser || !userProfile) return;
-    if (!audioChunks.length) { showToast('Please record audio first!'); return; }
-    const caption = document.getElementById('audioCaption').value.trim();
-    const blob = new Blob(audioChunks, { type: 'audio/webm' });
-    showProgress('audProgress', 'audProgressBar');
-    try {
-      const url = await uploadFile(blob, 'audio/' + currentUser.uid + '_' + Date.now() + '.webm', 'audProgressBar');
-      await savePost({ type: 'audio', audioUrl: url, caption });
-      audioChunks = [];
-      document.getElementById('audioPreview').style.display = 'none';
-      document.getElementById('audioCaption').value = '';
-      document.getElementById('recordTimer').textContent = '00:00';
-    } catch(e) { showToast('Upload failed: ' + e.message); }
-    hideProgress('audProgress');
-  });
+  filter(type, btn){
+    activeFilter=type;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderFeed();
+  },
 
-  async function savePost(data) {
-    await addDoc(collection(db, 'posts'), {
-      ...data,
-      uid: currentUser.uid,
-      shortId: userProfile.shortId,
-      authorName: userProfile.name,
-      authorAvatar: userProfile.avatar,
-      village: userProfile.village,
-      createdAt: serverTimestamp()
-    });
-    showToast('Posted to village! 🌾');
-  }
+  openEmg(type){
+    curEmgType=type; const cfg=EMG[type];
+    document.getElementById('emgModalIcon').textContent=cfg.icon;
+    document.getElementById('emgModalTitle').textContent=cfg.title;
+    document.getElementById('emgModalDesc').textContent=cfg.desc;
+    document.getElementById('emgModal').classList.add('open');
+  },
 
-  async function uploadFile(fileOrBlob, path, barId) {
-    const sRef = ref(storage, path);
-    await uploadBytes(sRef, fileOrBlob);
-    let p = 10;
-    const iv = setInterval(() => {
-      p = Math.min(p + Math.random() * 20, 90);
-      document.getElementById(barId).style.width = p + '%';
-    }, 300);
-    const url = await getDownloadURL(sRef);
-    clearInterval(iv);
-    document.getElementById(barId).style.width = '100%';
-    return url;
-  }
+  async sendAlert(){
+    const cfg=EMG[curEmgType];
+    try{
+      await addDoc(collection(db,'posts'),{ type:'alert', text:cfg.banner, author:'అత్యవసర హెచ్చరిక సిస్టమ్', role:'🚨 SYSTEM ALERT', avatar:cfg.icon, avatarBg:'linear-gradient(135deg,#FFEBEE,#FFCDD2)', uid:currentUser.uid, imageURL:null, audioURL:null, likes:0, likedBy:[], comments:0, createdAt:serverTimestamp() });
+      document.getElementById('emgBannerText').textContent=cfg.banner;
+      document.getElementById('emgBanner').classList.add('active');
+      this.closeModal('emgModal'); toast('🚨 హెచ్చరిక గ్రామం అందరికీ పంపబడింది!');
+    }catch(e){ toast('❌ '+e.message); }
+  },
 
-  function showProgress(wid, bid) {
-    document.getElementById(wid).classList.add('show');
-    document.getElementById(bid).style.width = '0%';
-  }
-  function hideProgress(wid) {
-    setTimeout(() => document.getElementById(wid).classList.remove('show'), 600);
-  }
+  dismissBanner(){ document.getElementById('emgBanner').classList.remove('active'); },
+  openSarpanch(){ document.getElementById('sarModal').classList.add('open'); },
 
-  // ── FEED ──
-  function loadFeed(mode) {
-    const feed = document.getElementById('feed');
-    feed.innerHTML = '<div class="empty-state"><div class="em-icon">⏳</div><p>Loading posts…</p></div>';
-    const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
-    unsubFeed = onSnapshot(q, snap => {
-      let docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      if (mode === 'mine')   docs = docs.filter(d => d.uid === currentUser.uid);
-      if (mode === 'images') docs = docs.filter(d => d.type === 'image');
-      if (mode === 'audio')  docs = docs.filter(d => d.type === 'audio');
-      if (!docs.length) {
-        feed.innerHTML = '<div class="empty-state"><div class="em-icon">🌾</div><h3>Nothing here yet</h3><p>Be the first to post in the village!</p></div>';
-        return;
-      }
-      feed.innerHTML = docs.map(renderPost).join('');
-    });
-  }
+  pickAnnType(btn,type){
+    curAnnType=type;
+    document.querySelectorAll('.ann-type-btn').forEach(b=>b.classList.remove('sel'));
+    btn.classList.add('sel');
+  },
 
-  function renderPost(d) {
-    const time = d.createdAt
-      ? new Date(d.createdAt.seconds * 1000).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
-      : 'Just now';
-    let content = '', badge = '';
-    if (d.type === 'text') {
-      badge = 'text'; content = '<p>' + escHtml(d.text) + '</p>';
-    } else if (d.type === 'image') {
-      badge = 'img';
-      content = (d.caption ? '<p>' + escHtml(d.caption) + '</p>' : '') +
-        '<img src="' + d.imageUrl + '" alt="post" onclick="document.getElementById(\'lightboxImg\').src=this.src;document.getElementById(\'lightbox\').classList.add(\'show\')" loading="lazy"/>';
-    } else if (d.type === 'audio') {
-      badge = 'audio';
-      content = (d.caption ? '<p>' + escHtml(d.caption) + '</p>' : '') + '<audio controls src="' + d.audioUrl + '"></audio>';
+  async sendAnnouncement(){
+    const text=document.getElementById('annText').value.trim();
+    if(!text){ toast('⚠️ ప్రకటన రాయండి'); return; }
+    try{
+      await addDoc(collection(db,'posts'),{ type:'announcement', text:ANN[curAnnType]+' '+text, author:userProfile.name, role:'సర్పంచ్', avatar:userProfile.avatar, avatarBg:'linear-gradient(135deg,#2D6A2D,#1B5E20)', uid:currentUser.uid, imageURL:null, audioURL:null, likes:0, likedBy:[], comments:0, createdAt:serverTimestamp() });
+      this.closeModal('sarModal'); document.getElementById('annText').value='';
+      toast('📢 ప్రకటన గ్రామం అందరికీ పంపబడింది!');
+    }catch(e){ toast('❌ '+e.message); }
+  },
+
+  toggleElder(){
+    isElderMode=!isElderMode;
+    document.body.classList.toggle('elder-mode',isElderMode);
+    const btn=document.getElementById('elderToggle');
+    btn.classList.toggle('active',isElderMode);
+    btn.textContent=isElderMode?'🏠 సాధారణ':'👴 పెద్దలు';
+  },
+
+  async elderRecord(){
+    const btn=document.getElementById('elderRecBtn');
+    const status=document.getElementById('elderRecStatus');
+    if(!elderRecording){
+      try{
+        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+        mediaRec=new MediaRecorder(stream); audioChunks=[];
+        mediaRec.ondataavailable=e=>audioChunks.push(e.data);
+        mediaRec.onstop=async()=>{
+          stream.getTracks().forEach(t=>t.stop());
+          const blob=new Blob(audioChunks,{type:'audio/webm'});
+          try{
+            const r=ref(st,`posts/${currentUser.uid}/${Date.now()}_elder.webm`);
+            await uploadBytes(r,blob); const audioURL=await getDownloadURL(r);
+            await addDoc(collection(db,'posts'),{ type:'audio', text:'వాయిస్ సందేశం పంచారు', author:userProfile.name, role:'గ్రామ పెద్ద', avatar:userProfile.avatar, avatarBg:userProfile.avatarBg, uid:currentUser.uid, imageURL:null, audioURL, likes:0, likedBy:[], comments:0, createdAt:serverTimestamp() });
+            toast('✅ వాయిస్ సందేశం గ్రామంతో పంచబడింది!');
+          }catch(e){ toast('❌ '+e.message); }
+        };
+        mediaRec.start(); elderRecording=true;
+        btn.textContent='⏹'; btn.classList.add('active');
+        status.textContent='🔴 రికార్డింగ్... మళ్ళీ నొక్కండి ఆపడానికి';
+      }catch{ toast('🎙️ మైక్రోఫోన్ అనుమతి అవసరం'); }
+    } else {
+      mediaRec?.stop(); elderRecording=false;
+      btn.textContent='🎙️'; btn.classList.remove('active');
+      status.textContent='నొక్కండి & మాట్లాడండి';
     }
-    return '<div class="post-card"><div class="post-header"><div class="post-avatar">' + (d.authorAvatar||'👤') +
-      '</div><div class="post-meta"><div class="post-author">' + escHtml(d.authorName||'Villager') +
-      '</div><div class="post-time">📍 ' + escHtml(d.village||'') + ' · ' + time +
-      '</div></div><span class="post-badge ' + badge + '">' +
-      (d.type==='text'?'✍️ Text':d.type==='image'?'🖼️ Photo':'🎙️ Voice') +
-      '</span></div><div class="post-content">' + content +
-      '</div><div class="post-footer">Village ID: ' + (d.shortId||'—') + '</div></div>';
-  }
+  },
 
-  // ── LIGHTBOX ──
-  document.getElementById('lightboxClose').addEventListener('click', () => document.getElementById('lightbox').classList.remove('show'));
-  document.getElementById('lightbox').addEventListener('click', e => {
-    if (e.target === document.getElementById('lightbox')) document.getElementById('lightbox').classList.remove('show');
-  });
+  closeModal(id){ document.getElementById(id)?.classList.remove('open'); },
+  copyLink(){ toast('🔗 లింక్ కాపీ అయింది!'); }
+};
 
+// Close modal on backdrop click
+document.addEventListener('click', e=>{ if(e.target.classList.contains('modal-overlay')) e.target.classList.remove('open'); });
+
+// Animate active count
+setInterval(()=>{ const el=document.getElementById('activeCount'); if(el) el.textContent=Math.floor(38+Math.random()*22); }, 5000);
 </script>
 </body>
 </html>
