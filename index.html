@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -926,7 +926,9 @@ window.addEventListener('firebase-ready', () => {
   fb = window._fb;
 
   fb.onAuthStateChanged(fb.auth, async (user) => {
-    hide('loadingOverlay');
+    // Always hide loading overlay first
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
 
     if (!user) {
       showPage('page-login');
@@ -935,15 +937,92 @@ window.addEventListener('firebase-ready', () => {
 
     currentUser = user;
 
-    // Check if profile exists
-    const snap = await fb.getDoc(fb.doc(fb.db, 'users', user.uid));
-    if (!snap.exists()) {
-      document.getElementById('setupUid').textContent = user.uid.slice(0, 8).toUpperCase();
-      showPage('page-profile-setup');
-    } else {
-      userProfile = snap.data();
-      loadApp();
+    try {
+      // Check if profile exists
+      const snap = await fb.getDoc(fb.doc(fb.db, 'users', user.uid));
+      if (!snap.exists()) {
+        document.getElementById('setupUid').textContent = user.uid.slice(0, 8).toUpperCase();
+        showPage('page-profile-setup');
+      } else {
+        userProfile = snap.data();
+        loadApp();
+      }
+    } catch (e) {
+      console.error('Error loading profile:', e);
+      showPage('page-login');
     }
+  });
+
+  // ── Attach all event listeners here so fb is always defined ──
+
+  document.getElementById('loginBtn').addEventListener('click', async () => {
+    clearAlert('login-alert');
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-password').value;
+    if (!email || !pass) { showAlert('login-alert', 'Please fill in all fields.'); return; }
+
+    setLoading('loginBtn', 'loginSpinner', true);
+    try {
+      await fb.signInWithEmailAndPassword(fb.auth, email, pass);
+      // onAuthStateChanged will handle redirect automatically
+    } catch(e) {
+      showAlert('login-alert', friendlyError(e.code));
+    } finally {
+      setLoading('loginBtn', 'loginSpinner', false);
+    }
+  });
+
+  document.getElementById('registerBtn').addEventListener('click', async () => {
+    clearAlert('register-alert');
+    const email = document.getElementById('reg-email').value.trim();
+    const pass  = document.getElementById('reg-password').value;
+    const pass2 = document.getElementById('reg-password2').value;
+    if (!email || !pass) { showAlert('register-alert', 'Please fill in all fields.'); return; }
+    if (pass !== pass2)  { showAlert('register-alert', 'Passwords do not match.'); return; }
+    if (pass.length < 6) { showAlert('register-alert', 'Password must be at least 6 characters.'); return; }
+
+    setLoading('registerBtn', 'registerSpinner', true);
+    try {
+      await fb.createUserWithEmailAndPassword(fb.auth, email, pass);
+      // onAuthStateChanged will handle redirect automatically
+    } catch(e) {
+      showAlert('register-alert', friendlyError(e.code));
+    } finally {
+      setLoading('registerBtn', 'registerSpinner', false);
+    }
+  });
+
+  document.getElementById('saveProfileBtn').addEventListener('click', async () => {
+    clearAlert('setup-alert');
+    const name    = document.getElementById('setup-name').value.trim();
+    const village = document.getElementById('setup-village').value.trim();
+    const bio     = document.getElementById('setup-bio').value.trim();
+    if (!name || !village) { showAlert('setup-alert', 'Name and village are required.'); return; }
+
+    setLoading('saveProfileBtn', 'profileSpinner', true);
+    try {
+      const profile = {
+        uid: currentUser.uid,
+        name, village, bio,
+        avatar: selectedAvatar,
+        email: currentUser.email,
+        createdAt: new Date().toISOString(),
+        shortId: currentUser.uid.slice(0, 8).toUpperCase()
+      };
+      await fb.setDoc(fb.doc(fb.db, 'users', currentUser.uid), profile);
+      userProfile = profile;
+      loadApp();
+    } catch(e) {
+      showAlert('setup-alert', 'Error saving profile: ' + e.message);
+    } finally {
+      setLoading('saveProfileBtn', 'profileSpinner', false);
+    }
+  });
+
+  document.getElementById('signOutBtn').addEventListener('click', async () => {
+    if (unsubFeed) unsubFeed();
+    await fb.signOut(fb.auth);
+    currentUser = null; userProfile = null;
   });
 });
 
@@ -978,40 +1057,7 @@ function showToast(msg) {
 // ════════════════════════════════════════
 //  AUTH
 // ════════════════════════════════════════
-document.getElementById('loginBtn').addEventListener('click', async () => {
-  clearAlert('login-alert');
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-password').value;
-  if (!email || !pass) { showAlert('login-alert', 'Please fill in all fields.'); return; }
 
-  setLoading('loginBtn', 'loginSpinner', true);
-  try {
-    await fb.signInWithEmailAndPassword(fb.auth, email, pass);
-  } catch(e) {
-    showAlert('login-alert', friendlyError(e.code));
-  } finally {
-    setLoading('loginBtn', 'loginSpinner', false);
-  }
-});
-
-document.getElementById('registerBtn').addEventListener('click', async () => {
-  clearAlert('register-alert');
-  const email = document.getElementById('reg-email').value.trim();
-  const pass  = document.getElementById('reg-password').value;
-  const pass2 = document.getElementById('reg-password2').value;
-  if (!email || !pass) { showAlert('register-alert', 'Please fill in all fields.'); return; }
-  if (pass !== pass2)  { showAlert('register-alert', 'Passwords do not match.'); return; }
-  if (pass.length < 6) { showAlert('register-alert', 'Password must be at least 6 characters.'); return; }
-
-  setLoading('registerBtn', 'registerSpinner', true);
-  try {
-    await fb.createUserWithEmailAndPassword(fb.auth, email, pass);
-  } catch(e) {
-    showAlert('register-alert', friendlyError(e.code));
-  } finally {
-    setLoading('registerBtn', 'registerSpinner', false);
-  }
-});
 
 // ════════════════════════════════════════
 //  PROFILE SETUP
@@ -1022,33 +1068,6 @@ document.getElementById('avatarPick').addEventListener('click', e => {
   document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
   opt.classList.add('selected');
   selectedAvatar = opt.dataset.av;
-});
-
-document.getElementById('saveProfileBtn').addEventListener('click', async () => {
-  clearAlert('setup-alert');
-  const name    = document.getElementById('setup-name').value.trim();
-  const village = document.getElementById('setup-village').value.trim();
-  const bio     = document.getElementById('setup-bio').value.trim();
-  if (!name || !village) { showAlert('setup-alert', 'Name and village are required.'); return; }
-
-  setLoading('saveProfileBtn', 'profileSpinner', true);
-  try {
-    const profile = {
-      uid: currentUser.uid,
-      name, village, bio,
-      avatar: selectedAvatar,
-      email: currentUser.email,
-      createdAt: new Date().toISOString(),
-      shortId: currentUser.uid.slice(0, 8).toUpperCase()
-    };
-    await fb.setDoc(fb.doc(fb.db, 'users', currentUser.uid), profile);
-    userProfile = profile;
-    loadApp();
-  } catch(e) {
-    showAlert('setup-alert', 'Error saving profile: ' + e.message);
-  } finally {
-    setLoading('saveProfileBtn', 'profileSpinner', false);
-  }
 });
 
 // ════════════════════════════════════════
@@ -1065,11 +1084,6 @@ function loadApp() {
   loadFeed('all');
 }
 
-document.getElementById('signOutBtn').addEventListener('click', async () => {
-  if (unsubFeed) unsubFeed();
-  await fb.signOut(fb.auth);
-  currentUser = null; userProfile = null;
-});
 
 // ════════════════════════════════════════
 //  TABS
